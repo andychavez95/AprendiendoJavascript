@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>Calculadora</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/index.css" type="text/css">
+</head>
+
+<body>
+  <div class="box-input">
+    <label for="pantalla">Número:</label><br>
+    <input type="text" id="pantalla" onclick="vaciar()">
+  </div>
+
+  <h2 id="info" class="grande" title="Info sobre el número">Info sobre el número</h2>
+
+  <div class="box">
+    <p>Operaciones unitarias</p>
+    <div class="button-box">
+      <button id="cuadrado" onclick="cuadrado()">X<sup>2</sup></button>
+      <button id="modulo" onclick="mod()">%</button>
+      <button id="factorial" onclick="fact()">X!</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <p>Operaciones binarias</p>
+    <div class="button-box">
+      <button id="multiplicacion" onclick="mul()">X</button>
+      <button id="suma" onclick="add()">+</button>
+      <button id="igual" onclick="eq()">=</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <p>Operaciones con formatos CSV</p>
+    <div class="button-box">
+      <button id="sumatorio" onclick="sumatorio()">Sumatorio</button>
+      <button id="ordenar" onclick="ordenar()">Ordenar</button>
+      <button id="revertir" onclick="revertir()">Invertir</button>
+      <button id="quitar" onclick="quitar()">Quitar ultimo elemento</button>
+    </div>
+  </div>
+</body>
+
+<script type="text/javascript">
+
+  //Cuadro de texto de entrada de datos.
+  const inputNumber = document.getElementById("pantalla");
+
+  //Aviso.
+  const avisoH2 = document.getElementById("info");
+  const MENSAJE = "Error";
+  const MENSAJEARRAY = "Error";
+
+  //Operador matemático.
+  let operador;
+
+  //Operandos.
+  let operandoA, operandoB;
+
+  const vaciar = () => inputNumber.value = "";
+
+  const mostrarAviso = (x) => {
+    let aviso;
+
+    if (x < 100) {
+      aviso = "Info: El resultado es menor que 100";
+    } else if (x >= 100 && x <= 200) {
+      aviso = "Info: El resultado está entre 100 y 200";
+    } else {
+      aviso = "Info: El resultado es superior a 200";
+    }
+
+    avisoH2.innerHTML = aviso;
+  }
+
+  const cuadrado = () => {
+    let base = inputNumber.value;
+
+    if (validar(base)) {
+      let resultado;
+      resultado = inputNumber.value = base * base;
+      mostrarAviso(resultado);
+    } else {
+      inputNumber.value = MENSAJE;
+    }
+  }
+
+  const mod = () => {
+    let resultado = inputNumber.value;
+    if (validar(resultado)) {
+      if (resultado < 0) {
+        inputNumber.value = resultado * -1;
+      }
+    } else {
+      inputNumber.value = MENSAJE;
+    }
+  }
+
+  const fact = () => {
+    let numero = inputNumber.value;
+
+    if (validar(numero)) {
+      let resultado;
+      resultado = factorial(numero);
+      inputNumber.value = resultado;
+    } else {
+      inputNumber.value = MENSAJE;
+    }
+  }
+
+  const factorial = (numero) => {
+    let acumulado;
+
+    if (numero > 1) {
+      acumulado = numero * factorial(numero - 1);
+    } else {
+      acumulado = 1;
+    }
+
+    return acumulado;
+  }
+
+  const mul = () => {
+    operandoA = inputNumber.value;
+    if (validar(operandoA)) {
+      operador = "*";
+      vaciar();
+    } else {
+      inputNumber.value = MENSAJE;
+    }
+  }
+
+  const add = () => {
+    operandoA = inputNumber.value;
+    if (validar(operandoA)) {
+      operador = "+";
+      vaciar();
+    } else {
+      inputNumber.value = MENSAJE;
+    }
+  }
+
+  const eq = () => {
+
+    operandoB = inputNumber.value;
+
+    if (validar(operandoB)) {
+      let resultado;
+
+      if (operador === '*') {
+        resultado = operandoA * operandoB;
+      } else {
+        resultado = +operandoA + +operandoB;
+      }
+
+      inputNumber.value = resultado;
+    } else {
+      inputNumber.value = MENSAJE;
+    }
+  }
+
+  const sumatorio = () => {
+    let list = inputNumber.value.split(",");
+    if (esArrayNumerico(list)) {
+      let i = 0, resultado = 0;
+
+      while (i < list.length) {
+        resultado += +list[i++];
+      }
+
+      inputNumber.value = resultado;
+
+    } else {
+      inputNumber.value = MENSAJEARRAY;
+    }
+  }
+
+  const ordenar = () => {
+    let list = inputNumber.value.split(",");
+
+    if (esArrayNumerico(list)) {
+      inputNumber.value = list.sort((a, b) => {
+        return a - b;
+      });
+    } else {
+      inputNumber.value = MENSAJEARRAY;
+    }
+  }
+
+  const revertir = () => {
+    let list = inputNumber.value.split(",");
+    if (esArrayNumerico(list)) {
+      inputNumber.value = list.reverse();
+    } else {
+      inputNumber.value = MENSAJEARRAY;
+    }
+  }
+
+  const quitar = () => {
+    let list = inputNumber.value.split(",");
+
+    if (esArrayNumerico(list)) {
+      list.pop();
+      inputNumber.value = list;
+    } else {
+      inputNumber.value = MENSAJEARRAY;
+    }
+  }
+
+  //Valida si es un número.
+  const validar = (x) => {
+    return (!isNaN(x));
+  }
+
+  //Valida si es un array numérico.
+  const esArrayNumerico = (x) => {
+    let i = 0;
+    let esNumero = true;
+    while (i < x.length) {
+      if (!validar(x[i++])) {
+        i = x.length;
+        esNumero = false;
+      }
+    }
+    return esNumero;
+  }
+</script>
+
+</html>
